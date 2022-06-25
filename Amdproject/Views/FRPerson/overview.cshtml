@@ -1,0 +1,118 @@
+﻿
+@{
+    ViewBag.Title = "overview";
+    Layout = "~/Views/Shared/_main.cshtml";
+}
+
+
+<link href="~/Content/style2.css" rel="stylesheet" />
+<link href="~/Content/StyleSheet1.css" rel="stylesheet" />
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4 movie_list" style="padding:2px; margin-top:-10px">
+    <div class="search-box">
+        <button class="btn-search"><i class="fas fa-search"></i></button>
+        <input type="text" id="search" class="input-search" placeholder="Type to Search...">
+    </div>
+    <div class="pt-8 pb-2 mb-3 border-bottom">
+        <div class="row" id="movielist">
+
+
+        </div>
+
+
+
+    </div>
+
+</main>
+
+
+
+@section script{
+
+
+    <script>
+        var offset;
+        var limit;
+
+
+
+
+        const $myInput = document.getElementById('search');
+
+        $myInput.onkeydown = function (event) {
+            if (event.key === 'Enter') {
+                if ($myInput.value.length == 0) {
+                    offset = 0;
+                    limit = 8;
+                    $("#movielist").empty();
+                    loaddata();
+                }
+                else {
+                    $("#movielist").load('/FRPerson/Listfrp?name='+ $myInput.value);
+                }
+            }
+        }
+
+
+
+
+
+
+
+        function loaddata() {
+
+            $.ajax({
+                type: 'POST',
+                url: '/FRPerson/partialview',
+                data: '{offset:"' + offset + '",limit:"' + limit + '"}',
+                contentType: "application/json;",
+                success: function (response) {
+
+                    if (response.length === 0) {
+
+                        
+                    }
+
+                    else {
+                        //     $('#noti-content').attr("class", "ll");
+
+                        $.each(response, function (index, value) {
+                     
+                            var milisegundos = parseInt(value.dob.replace("/Date(", "").replace(")/", ""));
+                            var newDate = new Date(milisegundos).toLocaleDateString("en-UE");
+
+
+                            $('#movielist').append($('<div class="card-view"><img src=' + value.pic + ' style="width:100%; height:300px;" alt=' + value.frpname + ' class="card-header"><div class="card-movie-content"><div class="card-movie-content-head"><a href=/FRPerson/frpinfo/' + value.id + '><h3 class="card-movie-title">' + value.frpname + '</h3></a><div class="ratings"><span>' + newDate + '</span></div></div><div class="card-movie-info"></div></div></div>'));
+
+                        });
+                        offset = (offset + limit);
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                    //alert(offset + " " + limit);
+                }
+
+            });
+
+
+        }
+
+        
+
+
+        $(window).scroll(function () { // each time the scroll event is triggered
+            if ($(window).scrollTop() + screen.height > $('body').height()) {
+
+                loaddata();
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', (event) => {
+            offset = 0;
+            limit = 8;
+            loaddata();
+        });
+
+    </script>
+}
+

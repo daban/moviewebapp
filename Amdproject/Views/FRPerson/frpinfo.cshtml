@@ -1,0 +1,243 @@
+﻿@model Amdproject.Models.filmrelatedpesonmodel
+@using Amdproject.Models
+@{
+    ViewBag.Title = "Add Film Related Person";
+    Layout = "~/Views/Shared/_main.cshtml";
+}
+
+
+@section head{
+
+     <!-- Select2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+
+
+}
+
+
+    <div class='card'>
+        <div class='card-header'>
+            <h1> Film Related Person</h1>
+           
+            @if (ViewBag.error != null)
+            {
+
+                <p id="message">@ViewBag.error </p>}
+            <p id="nameav" style="font-size:large;color:red"></p>
+        </div>
+        <div class='card-body'>
+
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "f1" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-horizontal">
+
+                    <hr />
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        <label class="control-label col-md-2" for="rdate">Name</label>
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.frpname, new { htmlAttributes = new { @class = "form-control", @required = "required" } })
+                            @Html.ValidationMessageFor(model => model.frpname, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-2" for="rdate">Date Of Birth</label>
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.dob, new { htmlAttributes = new { @class = "form-control", @type = "date" } })
+                            @Html.ValidationMessageFor(model => model.dob, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.pic, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.pic, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.pic, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-2" for="rdate">Gender</label>
+                        <div class="col-md-10">
+                            @*@Html.DropDownListFor(m => m.Gender, new List<SelectListItem>
+                            { new SelectListItem{Text="Male", Value="Male"},
+                              new SelectListItem{Text="Female", Value="Female"}}, "Please select",new {@class="form-control" })*@
+
+                            @Html.DropDownListFor(m => m.Gender, new List<SelectListItem>
+                       { new SelectListItem{Text="Male", Value="Male"},
+                         new SelectListItem{Text="Female", Value="Female"}},new {@class="form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            @{
+                                if (Model != null)
+                                {
+
+                                    <a id="update" value="Update" onclick="update();return false" style="width:100px;" class="btn btn-primary">Update</a>
+                                    <a onclick="deletee();return false" id="delete" value="delete" style="width:100px;" class="btn btn-danger">Delete</a>
+                                    <a id="new" value="New" onclick="addnew();return false" style="width:100px;" class="btn btn-success">New</a>
+                                }
+                                else
+                                {
+                                    <input type="submit" id="create" value="Create" style="width:100px;" class="btn btn-success" />
+                                }
+                            }
+
+
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <p id="logs" style="display:none">
+
+                @if (Model != null)
+                {
+                    if (Model.frpname != null)
+                    {<input type="hidden" id="idd" value="@Model.id" />}
+                }
+
+
+            </p>
+        </div>
+
+
+
+        @section script{
+
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+            <script>
+
+
+
+                function addnew() {
+                    window.location = '/FRPerson/frpinfo/';
+                }
+
+
+
+
+
+                function deletee() {
+                    var id = document.getElementById("idd").value;
+                    swal({
+                        title: "Are you sure?",
+                        text: "Once deleted, all related information will be deleted to this person",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                    })
+                        .then((willDelete) => {
+                            if (willDelete) {
+                                try {
+
+
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/FRPerson/Delete",
+                                        data: '{id: ' + id + ' }',
+                                        contentType: "application/json; charset=utf-8",
+
+                                        success: function (response) {
+                                            swal(response, {
+                                                icon: "success",
+                                            });
+                                            setTimeout(() => { window.location = '/FRPerson/frpinfo/' + id; }, 2000);
+                                        }
+                                    });
+                                } catch { }
+
+
+                            } else {
+                                swal("you have canceled the delete proccess");
+                            }
+                        });
+                }
+
+
+
+
+                function update() {
+                    var id = document.getElementById("idd").value;
+                    var frpname = document.getElementById("frpname").value;
+                    var dob = document.getElementById("dob").value;
+                    var gender = document.getElementById("Gender").value;
+                    var pic = document.getElementById("pic").value;
+                    swal({
+                        title: "Are you sure?",
+                        text: "you want to update current film related persons",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                    })
+                        .then((willDelete) => {
+                            if (willDelete) {
+                                try {
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/FRPerson/Update",
+                                        data: '{id:' + id + ',frpname: "' + frpname + '",dob: "' + dob + '",pic: "' + pic + '",gender: "' + gender + '" }',
+                                        contentType: "application/json; charset=utf-8",
+
+                                        success: function (response) {
+
+                                            swal(response, {
+                                                icon: "success",
+                                            });
+                                            setTimeout(() => { window.location = '/FRPerson/frpinfo/' + id; }, 2000);
+                                        }
+                                    });
+                                } catch { }
+
+
+                            } else {
+                                swal("you have canceled the Update proccess");
+                            }
+                        });
+                }
+
+
+
+                $(document).ready(function () {   //same as: $(function() {
+
+                    try {
+                        if (document.getElementById("message").innerText == "ok") {
+
+                            swal("Your data has been submitted", {
+                                icon: "success",
+                            });
+                            setTimeout(() => { getlastrecord(); }, 2000);
+                        }
+                    } catch { }
+                });
+
+
+                function getlastrecord() {
+                    $.ajax({
+                        type: "POST",
+                        url: "/FRPerson/getlastrecordid",
+                        data: '{}',
+                        contentType: "application/json; charset=utf-8",
+
+                        success: function (response) {
+
+                            window.location = '/FRPerson/frpinfo/' + response
+                        }
+                    });
+
+
+                }
+
+
+
+
+
+
+            </script>
+        }
+    </div>

@@ -1,0 +1,51 @@
+﻿@model IEnumerable<Amdproject.Models.Filmmodel>
+
+@using Amdproject.Models
+
+
+
+
+
+
+    @foreach (var movie in Model)
+    {
+        <!-- Movie Card Start -->
+        <div class="card-view">
+            <img src="@movie.pic" style="width:100%; height:300px;" alt="@movie.fname" class="card-header">
+
+
+
+            <div class="card-movie-content">
+                <div class="card-movie-content-head">
+                    <a href="/Films/detail/@movie.fid">
+                        <h3 class="card-movie-title">@movie.fname</h3>
+                    </a>
+                    <div class="ratings"><span>@movie.rating</span>/5</div>
+                </div>
+                <div class="card-movie-info">
+                    <div class="movie-running-time">
+                        <label>Release Year</label>
+
+                    </div>
+                    <div class="movie-running-time">
+                        <span>@movie.rdate</span>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <!-- Movie Card End -->
+    <!-- Movie Card Start -->
+
+
+
+
+
+@section script{
+    <script>
+     //   $("#movielist").load('/Films/ListMovies?parentid=0');
+
+       
+    </script>
+}

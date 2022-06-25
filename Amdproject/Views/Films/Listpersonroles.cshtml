@@ -1,0 +1,102 @@
+﻿@model IEnumerable<Amdproject.Models.personinmovemodel>
+
+@using Amdproject.Models
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#myInput").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#myTable tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>
+<style>
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+</style>
+
+
+<input id="myInput" type="text" placeholder="Search..">
+<br><br>
+
+<table>
+    <thead>
+        <tr>
+
+            <th>Person Name</th>
+            <th>Role</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody id="myTable">
+
+        @foreach (var item in Model)
+        {
+            <tr>
+
+                <td>@item.personname</td>
+                <td>@item.rolename</td>
+                <td><input type="submit" class="btn btn-danger" id="@item.id" value="Delete" onclick='deleterole(this.id);return false' /></td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+
+
+<script>
+    function deleterole(id) {
+        swal({
+            title: "Are you sure?",
+            text: "you want to delete  this person in current movie with current role",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    try {
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/Films/DeletePersonRoleInMovies",
+                            data: '{id: ' + id + ' }',
+                            contentType: "application/json; charset=utf-8",
+
+                            success: function (response) {
+                                swal(response, {
+                                    icon: "success",
+                                });
+                                setTimeout(() => { window.location = '/Films/Films/' + fid; }, 2000);
+                            }
+                        });
+                    }
+                    catch {
+
+                    }
+                } else {
+                    swal("you have canceled the Delete proccess");
+                }
+            });
+    }
+
+
+</script>

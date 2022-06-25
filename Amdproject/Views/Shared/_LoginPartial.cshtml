@@ -1,0 +1,25 @@
+﻿
+@if (Request.IsAuthenticated)
+{
+    using (Html.BeginForm("Signout", "User", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <a href="/User/profile" class="dashboard-nav-item"><i class="fas fa-user"></i>@User.Identity.Name.Split(',')[1]</a>
+        <a href="/Films/watched" class="dashboard-nav-item ">
+            <i class="fas fa-photo-video"></i> Watched
+        </a>
+        <a href="/Default/suggestion" class="dashboard-nav-item ">
+            <i class="fas fa-photo-video"></i>
+    suggestion</a>
+        <a href="javascript:document.getElementById('logoutForm').submit()" class="dashboard-nav-item"><i class="fas fa-sign-out-alt"></i>Logout</a>
+
+    }
+}
+else
+{
+
+
+    <a href="/User/login" class="dashboard-nav-item"><i class="fas fa-sign-In-alt"></i>Login</a>
+
+}

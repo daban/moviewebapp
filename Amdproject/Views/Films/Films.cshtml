@@ -1,0 +1,444 @@
+﻿@model Amdproject.Models.Filmmodel
+@using Amdproject.Models
+@{
+    ViewBag.Title = "AddFilms";
+    Layout = "~/Views/Shared/_main.cshtml";
+}
+
+
+@section head{
+
+  
+    <!-- Select2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+   
+
+}
+
+
+<div class='card'>
+    <div class='card-header'>
+        <h1>Films</h1>
+        @if (ViewBag.error != null)
+        {
+            <p id="message">@ViewBag.error</p>}
+        <p id="nameav" style="font-size:large;color:red"></p>
+    </div>
+    <div class='card-body'>
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "f1" }))
+        {
+            @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                <label class="control-label col-md-2" for="rdate">Film Title</label>
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.fname, new { htmlAttributes = new { @class = "form-control", @required = "required" } })
+                    @Html.ValidationMessageFor(model => model.fname, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2" for="rdate">Release year</label>
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.rdate, new { htmlAttributes = new { @class = "form-control", @required = "required", @type = "number" } })
+                    @Html.ValidationMessageFor(model => model.rdate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.about, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.about, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.about, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2" for="rdate">Picture</label>
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.pic, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.pic, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+
+
+
+            <div class="form-group">
+                <label class="control-label col-md-2" for="parentid">Parent</label>
+                <div class="col-md-10">
+
+                    @Html.DropDownList("parentid", ViewBag.films as SelectList, new { @class = "js-states form-control", @required = "required" })
+
+
+
+                </div>
+            </div>
+
+
+
+            <div class="form-group">
+                <label class="control-label col-md-2" for="parentid">Genre</label>
+                <div class="col-md-10">
+
+                    @Html.DropDownList("multiple", ViewBag.genre as SelectList, new { @class = "js-states form-control", @multiple = true, @required = "required" })
+
+
+
+                </div>
+            </div>
+
+
+           
+
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    @{
+                        if (Model != null)
+                        {
+
+                            <a id="update" value="Update" onclick="update();return false" style="width:100px;" class="btn btn-primary">Update</a>
+                            <a onclick="deletemovie();return false" id="delete" value="delete" style="width:100px;" class="btn btn-danger">Delete</a>
+                            <a id="new" value="New" onclick="addnew();return false" style="width:100px;" class="btn btn-success">New</a>
+                        }
+                        else
+                        {
+                            <input type="submit" id="create" value="Create" style="width:100px;" class="btn btn-success" />
+                        }
+                    }
+
+
+                </div>
+            </div>
+        </div>
+        }
+
+        <p id="logs" style="display:none">
+
+            @if (Model != null)
+            {
+                if (Model.cats != null)
+                {<input type="hidden" id="fid" value="@Model.fid" />
+                    @Html.Raw(Json.Encode(Model.cats.Select(x => x.id).ToList()))
+                }
+            }
+
+
+        </p>
+    </div>
+
+
+
+
+    @if (Model != null)
+    {
+    <div class='card-body'>
+
+
+        <div class="form-horizontal">
+
+
+
+            <div class="form-group">
+                <label class="control-label col-md-2" for="parentid">Person</label>
+                <div class="col-md-10">
+
+                    @Html.DropDownList("frpid", ViewBag.frpnames as SelectList, new { @class = "js-states form-control", @required = "required" })
+
+
+
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2" for="parentid">Roles</label>
+                <div class="col-md-10">
+
+
+                    @Html.DropDownList("roleid", ViewBag.roles as SelectList, new { @class = "js-states form-control", @multiple = true, @required = "required" })
+
+
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="control-label col-md-2" for="parentid">Apply to subordinated Movies</label>
+                <div class="col-md-1">
+
+                    <input type="checkbox" class="form-control"  name="all" id="all" onclick="myFunction(this.id)"/>
+
+
+                </div>
+            </div>
+
+
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    @{
+
+
+                        <a id="addroles" value="Add" onclick="Addroles();return false" style="width:100px;" class="btn btn-success">Add</a>
+
+
+
+                    }
+
+
+                </div>
+            </div>
+        </div>
+
+
+
+        <div id="listdata">
+
+
+
+
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script>
+            var fid = document.getElementById("fid").value;
+          
+            $("#listdata").load('/Films/Listpersonroles?fid='+ fid);
+        </script>
+
+    </div>
+
+
+
+
+
+
+
+    }
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+@section script{
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Select2 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
+
+    
+
+    <script>
+
+
+        
+      
+
+
+        $("#parentid").select2({
+            placeholder: "Select parent",
+            allowClear: true
+        });
+        $("#multiple").select2({
+            placeholder: "Select Genre",
+            allowClear: true
+        });
+
+        $("#roleid").select2({
+            placeholder: "Select roles",
+            allowClear: true
+        });
+
+        $("#frpid").select2({
+            placeholder: "Select Person",
+            allowClear: true
+        });
+
+        var data = document.getElementById("logs").innerText;
+        try {
+
+
+            data = data.replace("[", "");
+            data = data.replace("]", "");
+
+            let result = data.split(",").map((e) => parseInt(e));
+            $("#multiple").val(result).change();
+
+        }
+        catch { }
+
+        //
+
+
+        function deletemovie() {
+            var fid = document.getElementById("fid").value;
+            swal({
+                title: "Are you sure?",
+                text: "Once deleted, all related information will be deleted to this film",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        try {
+
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/Films/Delete",
+                                data: '{fid: ' + fid + ' }',
+                                contentType: "application/json; charset=utf-8",
+
+                                success: function (response) {
+                                    swal(response, {
+                                        icon: "success",
+                                    });
+                                    setTimeout(() => { window.location = '/Films/Films/' + fid; }, 3000);
+                                }
+                            });
+                        } catch { }
+
+
+                    } else {
+                        swal("you have canceled the delete proccess");
+                    }
+                });
+        }
+
+
+        function addnew(){
+            window.location = '/Films/Films/';
+        }
+
+
+        function update() {
+            var fid = document.getElementById("fid").value;
+            var fname = document.getElementById("fname").value;
+            var rdate = document.getElementById("rdate").value;
+            var about = document.getElementById("about").value;
+            var pic = document.getElementById("pic").value;
+            var genre = $('#multiple').val();
+            var parentId = document.getElementById("parentid").value;
+            swal({
+                title: "Are you sure?",
+                text: "you want to update current movie",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        try {
+                            $.ajax({
+                                type: "POST",
+                                url: "/Films/Update",
+                                data: '{fid:' + fid + ',fname: "' + fname + '",rdate: ' + rdate + ',pic: "' + pic + '",about: "' + about + '",parentid: ' + parentId + ',genre: "' + genre + '" }',
+                                contentType: "application/json; charset=utf-8",
+
+                                success: function (response) {
+
+                                    swal("selected movie has been updated", {
+                                        icon: "success",
+                                    });
+                                    setTimeout(() => { window.location = '/Films/Films/' + fid; }, 2000);
+                                }
+                            });
+                        } catch { }
+
+
+                    } else {
+                        swal("you have canceled the Update proccess");
+                    }
+                });
+        }
+
+
+
+        $(document).ready(function () {   //same as: $(function() {
+            try {
+                if (document.getElementById("message").innerText == "ok") {
+
+
+                    swal("Your data has been submitted", {
+                        icon: "success",
+                    });
+                    setTimeout(() => { getlastrecord(); }, 2000);
+                }
+            } catch { }
+        });
+
+
+        function getlastrecord() {
+            $.ajax({
+                type: "POST",
+                url: "/Films/getlastrecordid",
+                data: '{}',
+                contentType: "application/json; charset=utf-8",
+
+                success: function (response) {
+
+                    window.location = '/Films/Films/' + response
+                }
+            });
+
+
+        }
+
+
+        var ch = "no";
+        function myFunction(id) {
+            // Get the checkbox
+           
+            var checkBox = document.getElementById(id);
+           
+            if (checkBox.checked == true) {
+                ch = "yes";
+            } else {
+                ch = "no";
+            }
+        }
+
+
+        function Addroles() {
+            var fid = document.getElementById("fid").value;
+            var frpid = $('#frpid').val();
+            var roleid = $('#roleid').val();
+          
+            $.ajax({
+                type: "POST",
+                url: "/Films/Addroles",
+                data: '{frpid:' + frpid + ',fid: ' + fid + ',roleid: "' + roleid + '",all:"'+ch+'"}',
+                contentType: "application/json; charset=utf-8",
+
+                success: function (response) {
+                    var icon = "success";
+                    if (response != "ok")
+                        icon = "error";
+                    swal(response, {
+                        icon: icon,
+                    });
+                    setTimeout(() => { window.location = '/Films/Films/' + fid; }, 2000);
+                }
+            });
+
+        }
+
+
+    </script>
+}
+

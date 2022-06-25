@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>@Page.Title</title>
+    <meta charset="utf-8" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css'>
+    <link href="~/Content/StyleSheet.css" rel="stylesheet" />
+
+    @RenderSection("head", required: false)
+</head>
+<body>
+    <div class='dashboard'>
+        <div class="dashboard-nav">
+            <header>
+                <a href="#!" class="menu-toggle"><i class="fas fa-bars"></i></a><a href="#"
+                                                                                   class="brand-logo">
+                    <i class="fas fa-anchor"></i> <span>Film Manager</span>
+                </a>
+            </header>
+            <nav class="dashboard-nav-list">
+                <a href="/Films/overview" class="dashboard-nav-item">
+                    <i class="fas fa-home"></i>
+                    Home
+                </a>
+
+                <div class='dashboard-nav-dropdown'>
+                    <a href="#!" class="dashboard-nav-item dashboard-nav-dropdown-toggle">
+                        <i class="fas fa-photo-video"></i> Films
+                    </a>
+                    <div class='dashboard-nav-dropdown-menu'>
+                        <a href="/Films/Films"
+                           class="dashboard-nav-dropdown-item">Manage Films</a>
+                        <a href="/Default/Index" class="dashboard-nav-dropdown-item">OverView</a>
+                        <a href="/Default/suggestion" class="dashboard-nav-dropdown-item">suggestion</a>
+                    </div>
+                </div>
+                <div class='dashboard-nav-dropdown'>
+                    <a href="#!" class="dashboard-nav-item dashboard-nav-dropdown-toggle">
+                        <i class="fas fa-users"></i> FRPersons
+                    </a>
+                    <div class='dashboard-nav-dropdown-menu'>
+                        <a href="/FRPerson/frpinfo"
+                           class="dashboard-nav-dropdown-item">Info</a>
+                        <a href="/FRPerson/overview" class="dashboard-nav-dropdown-item">OverCiew</a>
+                    </div>
+                </div>
+
+                  <div class="nav-item-divider"></div>
+                @Html.Partial("_LoginPartial")
+
+            </nav>
+        </div>
+        <div class='dashboard-app'>
+            <header class='dashboard-toolbar'><a href="#!" class="menu-toggle"><i class="fas fa-bars"></i></a></header>
+            <div class='dashboard-content' style="direction:ltr;">
+                @RenderBody()
+
+            </div>
+        </div>
+    </div>
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+
+
+    <script src="~/Content/main.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src='https://cdn.datatables.net/1.10.5/js/jquery.dataTables.min.js'></script>
+    <script src='https://cdn.datatables.net/responsive/1.0.4/js/dataTables.responsive.js'></script>
+
+
+    @RenderSection("script", required: false)
+
+
+</body>
+</html>

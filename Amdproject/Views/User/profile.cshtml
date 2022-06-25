@@ -1,0 +1,144 @@
+﻿@model Amdproject.Models.users
+
+@{
+    ViewBag.Title = "profile";
+    Layout = "~/Views/Shared/_main.cshtml";
+}
+
+<div class='card'>
+    <div class='card-header'>
+        <h1>Profile</h1>
+        @if (ViewBag.error != null)
+        {@ViewBag.error}
+        <p id="nameav" style="font-size:large;color:red"></p>
+    </div>
+    <div class='card-body'>
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+
+                <hr />
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    <label class="control-label col-md-2" for="name">Name</label>
+                    <div class="col-md-10">
+                        <input class="form-control text-box single-line" data-val="true" data-val-required="The Name field is required." id="name" name="name" type="text" value="" oninput="check()" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-2" for="Password">Old Password</label>
+                    <div class="col-md-10">
+                        <input class="form-control text-box single-line password" data-val="true" data-val-required="The Password field is required." id="old" name="old" type="password" value="" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-2" for="Password">new Password</label>
+                    <div class="col-md-10">
+                        <input class="form-control text-box single-line password" data-val="true" data-val-required="The Password field is required." id="new" name="new" type="password" value="" required />
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Save" id="save" class="btn btn-success" />
+                        <a onclick="deleteuser();return false" id="delete" value="delete" style="width:100px;" class="btn btn-warning">Delete</a>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+
+
+
+
+
+@section script{
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Select2 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+    <script>
+
+        function check() {
+            try {
+                var name = document.getElementById("name").value;
+
+                $.ajax({
+                    type: "POST",
+                    url: "/User/checkforusername",
+                    data: '{username: "' + name + '" }',
+                    contentType: "application/json; charset=utf-8",
+
+                    success: function (response) {
+                        document.getElementById("nameav").innerHTML = response;
+                        if (document.getElementById("nameav").innerHTML == "name is taken") document.getElementById("save").disabled = true;
+                        else document.getElementById("save").disabled = false;
+                    }
+                });
+            } catch { }
+        }
+
+
+        function deleteuser() {
+            
+            swal({
+                title: "Are you sure?",
+                text: "Once deleted, all related information will be deleted to this User",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        try {
+                            var pass = document.getElementById("old").value;
+                            $.ajax({
+                                type: "POST",
+                                url: "/User/Delete",
+                                data: '{pass: "' + pass + '" }',
+                                contentType: "application/json; charset=utf-8",
+
+                                success: function (response) {
+                                    swal(response, {
+                                        icon: "success",
+                                    });
+                                    setTimeout(() => { window.location = '/User/profile'; }, 3000);
+                                }
+                            });
+                        } catch { }
+
+
+                    } else {
+                        swal("you have canceled the delete proccess");
+                    }
+                });
+        }
+
+
+
+
+       
+
+        
+
+
+
+
+
+
+    </script>
+}
+
+
+
+

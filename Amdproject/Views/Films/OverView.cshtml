@@ -1,0 +1,45 @@
+﻿
+@{
+    ViewBag.Title = "OverView";
+    Layout = "~/Views/Shared/_main.cshtml";
+}
+<link href="~/Content/style2.css" rel="stylesheet" />
+<link href="~/Content/StyleSheet1.css" rel="stylesheet" />
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4 movie_list" style="margin-top:-10px">
+    <div class="search-box">
+        <button class="btn-search"><i class="fas fa-search"></i></button>
+        <input type="text" id="search" class="input-search" placeholder="Type to Search...">
+    </div><div class="pt-8 pb-2 mb-3 border-bottom" >
+ <div class="row" id="movielist">
+
+
+
+</div>
+</div>
+
+</main>
+
+
+
+@section script{
+
+
+    <script>
+        $("#movielist").load('/Films/ListMovies?parentid=0');
+
+
+
+        const $myInput = document.getElementById('search');
+
+        $myInput.onkeydown = function (event) {
+            if (event.key === 'Enter') {
+             
+                $("#movielist").load('/Films/ListMovies2?key=' + $myInput.value);
+            }
+        }
+
+       
+     
+
+    </script>
+}

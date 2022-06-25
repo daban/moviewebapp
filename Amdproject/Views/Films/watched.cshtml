@@ -1,0 +1,30 @@
+﻿
+@{
+    ViewBag.Title = "watched";
+    Layout = "~/Views/Shared/_main.cshtml";
+}
+
+<link href="~/Content/style2.css" rel="stylesheet" />
+<link href="~/Content/StyleSheet1.css" rel="stylesheet" />
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4 movie_list" style="margin-top:-10px">
+    <div class="pt-8 pb-2 mb-3 border-bottom">
+        <div class="row" id="movielist">
+
+
+
+        </div>
+    </div>
+
+</main>
+
+
+
+
+@section script{
+
+
+    <script>
+        $("#movielist").load('/Films/Listwatched');
+
+    </script>
+}

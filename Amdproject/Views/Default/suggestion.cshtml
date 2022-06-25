@@ -1,0 +1,110 @@
+﻿
+@{
+    ViewBag.Title = "suggestion";
+    Layout = "~/Views/Shared/_main.cshtml";
+}
+
+
+<link href="~/Content/style2.css" rel="stylesheet" />
+<link href="~/Content/StyleSheet1.css" rel="stylesheet" />
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4 movie_list" style="padding:2px; margin-top:-10px">
+    <div class="search-box">
+        <button class="btn-search"><i class="fas fa-search"></i></button>
+        <input type="text" id="search" class="input-search" placeholder="Type to Search...">
+    </div>
+    <div class="pt-8 pb-2 mb-3 border-bottom">
+        <div class="row" id="movielist">
+
+
+        </div>
+
+
+
+    </div>
+
+</main>
+
+
+
+@section script{
+
+
+    <script>
+        var offset;
+        var limit;
+
+
+
+
+        const $myInput = document.getElementById('search');
+
+        $myInput.onkeydown = function (event) {
+            if (event.key === 'Enter') {
+                if ($myInput.value.length == 0) {
+                    offset = 0;
+                    limit = 4;
+                    $("#movielist").empty();
+                    loaddata();
+                }
+                else {
+                    $("#movielist").load('/Films/ListMovies2?key=' + $myInput.value);
+                }
+            }
+        }
+
+        $(window).scroll(function () { // each time the scroll event is triggered
+            if ($(window).scrollTop() + screen.height > $('body').height()) {
+                
+                loaddata();
+            }
+        });
+
+
+
+
+
+        function loaddata() {
+
+            $.ajax({
+                type: 'POST',
+                url: '/Default/suggestpartial',
+                data: '{offset:"' + offset + '",limit:"' + limit + '"}',
+                contentType: "application/json;",
+                success: function (response) {
+
+                    if (response.length === 0) {
+
+                        // $('#noti-content2').append($('<a href="dashboard-saas.html" class="text-reset notification-item"> <div class="media"> <div class="media-body"><h6 class="mt-0 mb-1" >No Data Available</h6></div></div></a>'));
+                        //  alert("SD");
+                    }
+
+                    else {
+                        //     $('#noti-content').attr("class", "ll");
+
+                        $.each(response, function (index, value) {
+                            //   alert(value.fname);
+                            $('#movielist').append($('<div class="card-view"><img src=' + value.pic + ' style="width:100%; height:300px;" alt=' + value.fname + ' class="card-header"><div class="card-movie-content"><div class="card-movie-content-head"><a href=/Films/detail/' + value.fid + '><h3 class="card-movie-title">' + value.fname + '</h3></a><div class="ratings"><span>' + value.rating + '</span>/5</div></div><div class="card-movie-info"><div class="movie-running-time"><label>Release Year</label></div><div class="movie-running-time"> <span>' + value.rdate + '</span></div></div></div></div>'));
+
+                        });
+                        offset = offset + limit;
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                    //alert(offset + " " + limit);
+                }
+
+            });
+
+
+        }
+
+
+        window.addEventListener('DOMContentLoaded', (event) => {
+            offset = 0;
+            limit = 4;
+            loaddata();
+        });
+
+    </script>
+}

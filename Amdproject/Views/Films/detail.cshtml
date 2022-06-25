@@ -1,0 +1,230 @@
+﻿@model Amdproject.Models.Filmmodel
+@{
+    ViewBag.Title = "detail";
+    Layout = "~/Views/Shared/_main.cshtml";
+}
+<link href="~/Content/style2.css" rel="stylesheet" />
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    .rate {
+        float: left;
+        height: 46px;
+        padding: 0 10px;
+    }
+
+        .rate:not(:checked) > input {
+            position: absolute;
+            top: -9999px;
+        }
+
+        .rate:not(:checked) > label {
+            float: right;
+            width: 1em;
+            overflow: hidden;
+            white-space: nowrap;
+            cursor: pointer;
+            font-size: 30px;
+            color: #ccc;
+        }
+
+            .rate:not(:checked) > label:before {
+                content: '★ ';
+            }
+
+        .rate > input:checked ~ label {
+            color: #ffc700;
+        }
+
+        .rate:not(:checked) > label:hover,
+        .rate:not(:checked) > label:hover ~ label {
+            color: #deb217;
+        }
+
+        .rate > input:checked + label:hover,
+        .rate > input:checked + label:hover ~ label,
+        .rate > input:checked ~ label:hover,
+        .rate > input:checked ~ label:hover ~ label,
+        .rate > label:hover ~ input:checked ~ label {
+            color: #c59b08;
+        }
+
+    /* Modified from: https://github.com/mukulkant/Star-rating-using-pure-css */
+</style>
+<!-- Portfolio Item Heading -->
+<h1 class="my-4">
+    @Model.fname
+
+</h1>
+
+<!-- Portfolio Item Row -->
+<div class="row">
+
+    <div class="col-md-4">
+        <img class="img-fluid  img-responsive" style="width:400px; height:600px;" src="@Model.pic" alt="@Model.fname">
+    </div>
+
+    <div class="col-md-4">
+
+        <p>@Model.about</p>
+        <h3 class="my-3">Genre</h3>
+        <ul>
+            @foreach (var cat in Model.cats)
+            {
+                <li>@cat.name</li>
+            }
+        </ul>
+    </div>
+
+    <hr />
+    <br />
+    <table>
+        @foreach (var pr in Model.perinmovie)
+        {
+            <tr><td>@pr.personname</td> <td>@pr.rolename</td></tr>
+        }
+    </table>
+
+
+
+
+    <div class="rate " style="font-size:xx-large; ">
+        <input type="radio" id="star5" onclick="rate(this.id)" name="rate" value="5" />
+        <label for="star5" title="text">5 stars</label>
+        <input type="radio" id="star4" onclick="rate(this.id)" name="rate" value="4" />
+        <label for="star4" title="text">4 stars</label>
+        <input type="radio" id="star3" onclick="rate(this.id)" name="rate" value="3" />
+        <label for="star3" title="text">3 stars</label>
+        <input type="radio" id="star2" onclick="rate(this.id)" name="rate" value="2" />
+        <label for="star2" title="text">2 stars</label>
+        <input type="radio" id="star1" onclick="rate(this.id)" name="rate" value="1" />
+        <label for="star1" title="text">1 star</label>
+
+
+
+    </div>
+
+    <a id="delete" style="font-size:large" onclick="deleteratings(@Model.fid);return false" class="btn btn-danger">Delete your rating</a>
+    <a id="Edit" href="/Films/Films/@Model.fid" style="width:200px;font-size:large" class="btn btn-primary">Edit Movie</a>
+</div>
+
+<br />
+
+<br />
+
+<h3 class="my-4">Subordinated Movies</h3>
+<hr />
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4 movie_list" style="margin-top:-10px">
+    <div class="pt-8 pb-2 mb-3 border-bottom" id="movielist" style="margin-top:-50px;">
+
+
+
+
+    </div>
+
+</main>
+
+
+
+
+@if (Model != null)
+{
+    <input type="hidden" id="fid" value="@Model.fid" />
+    if (Model.cats != null)
+    {
+        <input type="hidden" id="rating" value="@Model.rating" />
+    }
+}
+
+
+<!-- /.row -->
+@section script{
+    <script>
+
+
+        var rating, fid;
+        window.addEventListener('DOMContentLoaded', (event) => {
+            rating = document.getElementById("rating").value;
+            fid = document.getElementById("fid").value;
+            if (rating > 0) {
+
+                $("#star" + rating).attr("checked", true);
+            }
+
+        });
+
+
+
+
+        function rate(id) {
+            ratee = id.replace("star", "");
+
+            $.ajax({
+                type: "POST",
+                url: "/Default/rate",
+                data: '{fidd:"' + fid.toString() + '",ratingg:"' + ratee.toString() + '"}',
+                contentType: "application/json; charset=utf-8",
+
+                success: function (response) {
+                    swal(response, {
+                        icon: "success",
+                    });
+                    setTimeout(() => { window.location = '/Films/detail/' + fid; }, 3000);
+                },
+                error: function (error) {
+                    swal(error, {
+                        icon: "success",
+                    });
+                }
+            });
+        }
+
+
+        function deleteratings(id) {
+            swal({
+                title: "Are you sure?",
+                text: "you want to delete ratings",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        try {
+                            $.ajax({
+                                type: "POST",
+                                url: "/Default/deleterating",
+                                data: '{fidd:"' + fid.toString() + '"}',
+                                contentType: "application/json; charset=utf-8",
+
+                                success: function (response) {
+                                    swal(response, {
+                                        icon: "success",
+                                    });
+                                    setTimeout(() => { window.location = '/Films/detail/' + fid; }, 3000);
+                                },
+                                error: function (error) {
+                                    swal(error, {
+                                        icon: "success",
+                                    });
+                                }
+                            });
+
+
+                        } catch { }
+
+
+                    } else {
+                        swal("you have canceled the delete proccess");
+                    }
+                });
+        }
+
+
+        $("#movielist").load('/Films/ListMovies?parentid=' +@Model.fid);
+
+    </script>
+}
